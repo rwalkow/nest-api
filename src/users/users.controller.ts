@@ -12,7 +12,6 @@ import {
 import { ExternalUserDTO } from './dto/external-user.dto';
 import { User } from './interfaces/user.interface';
 import { UsersDataService } from './users-data.service';
-import { dateToArray } from '../shared/helper/date.helper';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 
@@ -51,6 +50,6 @@ export class UsersController {
   }
 
   mapUserToExternal(user: User): ExternalUserDTO {
-    return { ...user, dateOfBirth: dateToArray(user.dateOfBirth) };
+    return { ...user };
   }
 }

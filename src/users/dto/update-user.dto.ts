@@ -1,18 +1,41 @@
-import { Roles } from '../enums/roles.enum';
+import { Roles } from '../../shared/enums/roles.enum';
+import { Type } from 'class-transformer';
+import {
+  IsEmail,
+  IsNotEmpty,
+  ValidateNested,
+  IsNumber,
+  IsEnum,
+} from 'class-validator';
 
-export interface UpdateUserDTO {
+export class UpdateUserDTO {
+  @IsNotEmpty()
   firstName: string;
+  @IsNotEmpty()
   lastName: string;
+
+  @IsEmail()
+  @IsNotEmpty()
   email: string;
-  dateOfBirth: Array<number>;
-  address: Array<UpdateUserAddress>;
-  role: Array<Roles>;
+
+  dateOfBirth: Date;
+
+  @ValidateNested({ each: true })
+  @Type(() => UpdateUserDTO)
+  address?: Array<UpdateUserAddressDTO>;
+
+  @IsEnum(Roles)
+  role: Roles[];
 }
 
-export interface UpdateUserAddress {
+export class UpdateUserAddressDTO {
+  @IsNotEmpty()
   country: string;
+  @IsNotEmpty()
   city: string;
+  @IsNotEmpty()
   street: string;
-  houseNo: string;
-  apartmentNo?: string;
+  @IsNotEmpty()
+  @IsNumber()
+  number: number;
 }
