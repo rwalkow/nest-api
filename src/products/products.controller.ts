@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
 } from '@nestjs/common';
@@ -20,10 +21,10 @@ export class ProductsController {
   constructor(private productRepository: ProductsDataService) {}
 
   @Get(':id')
-  getProductById(@Param('id') _id_: string): ExternalProductDTO {
-    return this.mapProductToExternal(
-      this.productRepository.getProductById(_id_),
-    );
+  getProductById(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): ExternalProductDTO {
+    return this.mapProductToExternal(this.productRepository.getProductById(id));
   }
 
   @Get() getAllProducts(): Array<ExternalProductDTO> {
@@ -33,13 +34,13 @@ export class ProductsController {
   }
 
   @Post()
-  addProduct(@Body() _item_: CreateProductDTO): ExternalProductDTO {
-    return this.productRepository.addProduct(_item_);
+  addProduct(@Body() item: CreateProductDTO): ExternalProductDTO {
+    return this.productRepository.addProduct(item);
   }
 
   @Put(':id')
   updateProduct(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() dto: UpdateProductDTO,
   ): ExternalProductDTO {
     return this.mapProductToExternal(
@@ -49,8 +50,8 @@ export class ProductsController {
 
   @Delete(':id')
   @HttpCode(204)
-  deleteProduct(@Param('id') _id_: string): void {
-    return this.productRepository.deleteProduct(_id_);
+  deleteProduct(@Param('id') id: string): void {
+    return this.productRepository.deleteProduct(id);
   }
 
   mapProductToExternal(product: Product): ExternalProductDTO {
