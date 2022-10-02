@@ -30,6 +30,6 @@ export class CreateProductDTO {
   count: number;
 
   @IsArray()
-  @IsEnum({ each: true })
+  @IsEnum(Tags, { each: true })
   tags: Array<Tags>;
 }
