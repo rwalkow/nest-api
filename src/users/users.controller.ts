@@ -49,7 +49,7 @@ export class UsersController {
 
   @Delete(':id')
   @HttpCode(204)
-  deleteUser(@Param('id') user: string): void {
+  async deleteUser(@Param('id') user: string): Promise<void> {
     return this.userRepository.deleteUser(user);
   }
 
