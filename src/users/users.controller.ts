@@ -10,37 +10,41 @@ import {
   Put,
 } from '@nestjs/common';
 import { ExternalUserDTO } from './dto/external-user.dto';
-import { User } from './interfaces/user.interface';
 import { UsersDataService } from './users-data.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
+import { User } from './db/users.entity';
 
 @Controller('users')
 export class UsersController {
   constructor(private userRepository: UsersDataService) {}
 
   @Get(':id')
-  getUserById(
+  async getUserById(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): ExternalUserDTO {
-    return this.mapUserToExternal(this.userRepository.getUserById(id));
+  ): Promise<ExternalUserDTO> {
+    return this.mapUserToExternal(await this.userRepository.getUserById(id));
   }
 
-  @Get() getAllUsers(): Array<ExternalUserDTO> {
-    return this.userRepository.getAllUsers().map(this.mapUserToExternal);
+  @Get() async getAllUsers(): Promise<Array<ExternalUserDTO>> {
+    return (await this.userRepository.getAllUsers()).map(
+      this.mapUserToExternal,
+    );
   }
 
   @Post()
-  addUser(@Body() user: CreateUserDTO): ExternalUserDTO {
-    return this.userRepository.addUser(user);
+  async addUser(@Body() user: CreateUserDTO): Promise<ExternalUserDTO> {
+    return this.mapUserToExternal(await this.userRepository.addUser(user));
   }
 
   @Put(':id')
-  updateUser(
+  async updateUser(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() dto: UpdateUserDTO,
-  ): ExternalUserDTO {
-    return this.mapUserToExternal(this.userRepository.updateUser(id, dto));
+  ): Promise<ExternalUserDTO> {
+    return this.mapUserToExternal(
+      await this.userRepository.updateUser(id, dto),
+    );
   }
 
   @Delete(':id')
@@ -50,6 +54,6 @@ export class UsersController {
   }
 
   mapUserToExternal(user: User): ExternalUserDTO {
-    return { ...user };
+    return { ...user, role: user.role?.map((i) => i) };
   }
 }
